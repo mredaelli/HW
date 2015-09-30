@@ -14,17 +14,28 @@ object NumUtils {
     res
   }
 
-  def diff1(m: DenseVector[Double], t: DenseVector[Double]): DenseVector[Double] = {
+  def diff(m: DenseVector[Double], t: DenseVector[Double]): DenseVector[Double] = {
     import breeze.interpolation._
     val res = DenseVector.zeros[Double](m.length)
-    val delta: Double = (t(1)-t(0))/5
-    val f = LinearInterpolator(t, m)
-    t.foreachPair{ (idx, t_) => res(idx) = (f(t_ +delta)-f(t_ -delta))/(2.0*delta) }
-    res(0) = (f(delta)-f(0))/delta
+    val delta: Double = (t(1)-t(0))/10
+    val f = CubicInterpolator(t, m)
+    t.foreachPair{ (idx, t_) =>  { if( idx > 0 && idx < m.length-1) res(idx) = (f(t_ +delta)-f(t_ -delta))/(2.0*delta) } }
+    res(0) = (f(t(0) + delta)-f(t(0)))/delta
     res(m.length-1) = (f(t(m.length-1))-f(t(m.length-1)-delta))/delta
     res
   }
-  def diff(m: DenseVector[Double], t: DenseVector[Double]): DenseVector[Double] = {
+  def diff2(m: DenseVector[Double], t: DenseVector[Double]): DenseVector[Double] = {
+    import breeze.interpolation._
+    val res = DenseVector.zeros[Double](m.length)
+    val delta: Double = (t(1)-t(0))/10
+    val f = CubicInterpolator(t, m)
+    t.foreachPair{ (idx, t_) =>  { if( idx > 0 && idx < m.length-1 )
+      res(idx) = (f(t_ +delta)+2*f(t_)-f(t_ -delta))/(delta*delta) } }
+    res(0) = (f(t(0) + delta)-f(t(0)))/delta
+    res(m.length-1) = (f(t(m.length-1))-f(t(m.length-1)-delta))/delta
+    res
+  }
+  def diff1(m: DenseVector[Double], t: DenseVector[Double]): DenseVector[Double] = {
     val res = DenseVector.zeros[Double](m.length)
     t.foreachPair{ (idx, t_) => if( idx > 0 && idx < m.length-1 ) res(idx) = (m(idx+1)-m(idx-1))/(t(idx+1)-t(idx-1)) }
     res(0) = (m(1)-m(0))/(t(1)-t(0))

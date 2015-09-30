@@ -40,19 +40,11 @@ object Main extends App  {
   val t = m(::, 0)
   val xt = NumUtils.diff(m(::,1), t)
   val yt = NumUtils.diff(m(::,2), t)
-
-  val fun = CubicInterpolator(m(::,1), t)
-  val res = fun(.5)
-  println(res)
-  //val fun1 = CubicInterpolator(xt, t)
-  //val res1 = fun1(t)
-  //p1 += plot(t, m(::,1)-res)
-  //p2 += plot(t, xt-res1)
+  p1 += plot(xt, yt)
 
   val xtt = NumUtils.diff(xt, t)
   val ytt = NumUtils.diff(yt, t)
-  println(yt)
-  println(ytt)
+  p2 += plot(xtt, ytt)
 
   f.refresh()
   //val m = DenseMatrix((1.0, 1.0), (1.0, 1.0), (1.0, 1.0))
